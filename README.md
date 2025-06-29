@@ -1,2 +1,2 @@
 # SmartSDLC
-#video demo link: https://drive.google.com/file/d/1_Qm1yXGGMfJJSAUVX6HtB-jAj93YpO_S/view?usp=drive_link
+video demo link: https://drive.google.com/file/d/1_Qm1yXGGMfJJSAUVX6HtB-jAj93YpO_S/view?usp=drive_link
