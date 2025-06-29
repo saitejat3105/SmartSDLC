@@ -1,0 +1,7 @@
+# Python version required: >=3.10,<3.12
+fastapi
+uvicorn
+jinja2
+ibm_watsonx_ai
+python-multipart
+
