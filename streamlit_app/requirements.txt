@@ -1,0 +1,5 @@
+streamlit
+ibm_watsonx_ai
+python-multipart
+
+# Python version required: >=3.10,<3.12

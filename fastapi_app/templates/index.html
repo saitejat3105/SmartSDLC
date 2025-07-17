@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SmartSDLC</title>
+    <style>
+        body { font-family: Arial; padding: 2em; background-color: #f2f2f2; }
+        textarea, button { width: 100%; padding: 1em; font-size: 1em; }
+        .result { background: white; padding: 1em; margin-top: 1em; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>SmartSDLC - Developer Assistant</h1>
+    <form method="post" action="/process">
+        <textarea name="prompt" rows="6" placeholder="Describe your problem, requirement or ask a coding question..."></textarea>
+        <button type="submit">Submit</button>
+    </form>
+    {% if response %}
+    <div class="result">
+        <h3>Response:</h3>
+        <pre>{{ response }}</pre>
+    </div>
+    {% endif %}
+</body>
+</html>
