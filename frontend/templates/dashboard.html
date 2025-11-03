@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SDLC Assistant</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1>Welcome to SDLC Assistant Platform 👋</h1>
+                <p>Your complete software development lifecycle companion</p>
+                <button onclick="logout()" class="btn btn-danger" style="float: right; margin-top: -50px;">Logout</button>
+            </div>
+            
+            <div class="nav-cards">
+                <a href="/sdlc-tools" class="nav-card">
+                    <div class="nav-card-icon">🛠️</div>
+                    <h3>SDLC Tools</h3>
+                    <p>Generate code, test cases, fix bugs, and create documentation from requirements</p>
+                </a>
+                
+                <a href="/coding-challenge" class="nav-card">
+                    <div class="nav-card-icon">💻</div>
+                    <h3>Coding Challenges</h3>
+                    <p>Practice coding problems and track your performance with detailed analytics</p>
+                </a>
+                
+                <a href="/history" class="nav-card">
+                    <div class="nav-card-icon">📚</div>
+                    <h3>History</h3>
+                    <p>View your past generations and coding attempts</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Assistant -->
+    <div class="voice-assistant">
+        <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceAssistant()">
+            🎤
+        </button>
+        <div class="voice-window" id="voiceWindow">
+            <h3>Voice Assistant</h3>
+            <div class="voice-output" id="voiceOutput">
+                <p>Click the microphone and ask me anything about SDLC...</p>
+            </div>
+            <button class="btn btn-primary" id="startRecording" onclick="startRecording()">
+                Start Recording
+            </button>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/voice-assistant.js"></script>
+</body>
+</html>

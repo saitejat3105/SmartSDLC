@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - SDLC Assistant</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1>📚 History</h1>
+                <p>View your past generations and attempts</p>
+                <a href="/dashboard" class="btn btn-secondary" style="float: right; margin-top: -50px;">← Back to Dashboard</a>
+            </div>
+
+            <div class="tools-container">
+                <h2>Recent Activity</h2>
+                <div class="history-list" id="historyList">
+                    <p style="text-align: center; padding: 20px; color: #6b7280;">Loading history...</p>
+                </div>
+
+                <div id="historyDetail" style="display: none;">
+                    <h3 style="color: var(--primary); margin-top: 30px;">Details</h3>
+                    <div class="history-detail">
+                        <p><strong>Type:</strong> <span id="detailType"></span></p>
+                        <p><strong>Date:</strong> <span id="detailDate"></span></p>
+                        
+                        <h4 style="margin-top: 20px; color: var(--primary);">Input:</h4>
+                        <pre style="background: #f9fafb; padding: 15px; border-radius: 10px; overflow-x: auto;" id="detailInput"></pre>
+                        
+                        <h4 style="margin-top: 20px; color: var(--primary);">Output:</h4>
+                        <pre style="background: #f9fafb; padding: 15px; border-radius: 10px; overflow-x: auto;" id="detailOutput"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Assistant -->
+    <div class="voice-assistant">
+        <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceAssistant()">🎤</button>
+        <div class="voice-window" id="voiceWindow">
+            <h3>Voice Assistant</h3>
+            <div class="voice-output" id="voiceOutput">
+                <p>Click the microphone and ask me anything about SDLC...</p>
+            </div>
+            <button class="btn btn-primary" id="startRecording" onclick="startRecording()">Start Recording</button>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/voice-assistant.js"></script>
+    <script>
+        let historyData = [];
+
+        async function loadHistory() {
+            try {
+                const response = await fetchWithAuth('/api/history');
+                historyData = await response.json();
+                
+                const listDiv = document.getElementById('historyList');
+                
+                if (historyData.length === 0) {
+                    listDiv.innerHTML = '<p style="text-align: center; padding: 20px; color: #6b7280;">No history found</p>';
+                    return;
+                }
+
+                listDiv.innerHTML = historyData.map(item => `
+                    <div class="history-item" onclick="viewHistoryDetail(${item.id})">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="color: var(--primary);">${formatType(item.type)}</strong>
+                                <p style="color: #6b7280; margin-top: 5px; font-size: 14px;">${item.input}</p>
+                            </div>
+                            <div style="color: #9ca3af; font-size: 14px;">
+                                ${new Date(item.created_at).toLocaleDateString()}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading history:', error);
+                document.getElementById('historyList').innerHTML = '<p style="text-align: center; padding: 20px; color: var(--danger);">Error loading history</p>';
+            }
+        }
+
+        async function viewHistoryDetail(id) {
+            try {
+                const response = await fetchWithAuth(`/api/history/${id}`);
+                const detail = await response.json();
+                
+                document.getElementById('detailType').textContent = formatType(detail.type);
+                document.getElementById('detailDate').textContent = new Date(detail.created_at).toLocaleString();
+                document.getElementById('detailInput').textContent = detail.input;
+                
+                // Parse output if it's JSON
+                try {
+                    const parsed = JSON.parse(detail.output);
+                    document.getElementById('detailOutput').textContent = JSON.stringify(parsed, null, 2);
+                } catch {
+                    document.getElementById('detailOutput').textContent = detail.output;
+                }
+                
+                document.getElementById('historyDetail').style.display = 'block';
+                document.getElementById('historyDetail').scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error loading detail:', error);
+                alert('Error loading history detail');
+            }
+        }
+
+        function formatType(type) {
+            const types = {
+                'code_generation': '💡 Code Generation',
+                'test_cases': '🧪 Test Cases',
+                'bug_fix': '🐛 Bug Fix',
+                'requirements_to_code': '📋 Requirements to Code'
+            };
+            return types[type] || type;
+        }
+
+        // Load history on page load
+        loadHistory();
+    </script>
+</body>
+</html>

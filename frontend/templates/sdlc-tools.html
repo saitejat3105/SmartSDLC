@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDLC Tools - SDLC Assistant</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1>🛠️ SDLC Tools</h1>
+                <p>Generate code, test cases, fix bugs, and more</p>
+                <a href="/dashboard" class="btn btn-secondary" style="float: right; margin-top: -50px;">← Back to Dashboard</a>
+            </div>
+            
+            <div class="tools-container">
+                <!-- Code Generation -->
+                <div class="tool-section">
+                    <h2>💡 Code Generation</h2>
+                    <div class="form-group">
+                        <label>Describe what code you need:</label>
+                        <textarea id="codePrompt" placeholder="E.g., Create a function to sort an array of numbers in Python"></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="generateCode()">Generate Code</button>
+                        <button class="btn btn-success" onclick="downloadPDF('code')" id="downloadCodeBtn" style="display: none;">Download as PDF</button>
+                    </div>
+                    <div class="output-box" id="codeOutput"></div>
+                </div>
+
+                <!-- Test Case Generation -->
+                <div class="tool-section">
+                    <h2>🧪 Test Case Generation</h2>
+                    <div class="form-group">
+                        <label>Paste your code here:</label>
+                        <textarea id="testCaseCode" placeholder="Paste your code here..."></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="generateTestCases()">Generate Test Cases</button>
+                        <button class="btn btn-success" onclick="downloadPDF('testCases')" id="downloadTestBtn" style="display: none;">Download as PDF</button>
+                    </div>
+                    <div class="output-box" id="testCaseOutput"></div>
+                </div>
+
+                <!-- Bug Fixing -->
+                <div class="tool-section">
+                    <h2>🐛 Bug Fixing</h2>
+                    <div class="form-group">
+                        <label>Code with bug:</label>
+                        <textarea id="buggyCode" placeholder="Paste code with bug..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Bug description:</label>
+                        <textarea id="bugDescription" placeholder="Describe the bug..." style="min-height: 80px;"></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="fixBug()">Fix Bug</button>
+                        <button class="btn btn-success" onclick="downloadPDF('bugFix')" id="downloadBugBtn" style="display: none;">Download as PDF</button>
+                    </div>
+                    <div class="output-box" id="bugFixOutput"></div>
+                </div>
+
+                <!-- Requirements to Code -->
+                <div class="tool-section">
+                    <h2>📋 Requirements to Code</h2>
+                    <div class="form-group">
+                        <label>Enter your project requirements:</label>
+                        <textarea id="requirements" placeholder="E.g., Create a user authentication system with login, logout, and password reset features"></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="requirementsToCode()">Generate Everything</button>
+                        <button class="btn btn-success" onclick="downloadPDF('requirements')" id="downloadReqBtn" style="display: none;">Download All as PDF</button>
+                    </div>
+                    
+                    <div id="requirementsOutput">
+                        <h3 style="margin-top: 20px; color: var(--primary);">📄 Documentation</h3>
+                        <div class="output-box" id="docOutput"></div>
+                        
+                        <h3 style="margin-top: 20px; color: var(--primary);">💻 Code</h3>
+                        <div class="output-box" id="reqCodeOutput"></div>
+                        
+                        <h3 style="margin-top: 20px; color: var(--primary);">🧪 Test Cases</h3>
+                        <div class="output-box" id="reqTestOutput"></div>
+                    </div>
+                </div>
+
+                <!-- UML Generator -->
+                <div class="tool-section">
+                    <h2>📊 UML Diagram Generator</h2>
+                    <div class="form-group">
+                        <label>Enter requirements for UML diagram:</label>
+                        <textarea id="umlRequirements" placeholder="E.g., E-commerce system with User, Product, Order classes"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateUML()">Generate UML</button>
+                    <div class="output-box" id="umlOutput"></div>
+                    <div id="umlImage" style="margin-top: 20px; text-align: center;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Assistant -->
+    <div class="voice-assistant">
+        <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceAssistant()">🎤</button>
+        <div class="voice-window" id="voiceWindow">
+            <h3>Voice Assistant</h3>
+            <div class="voice-output" id="voiceOutput">
+                <p>Click the microphone and ask me anything about SDLC...</p>
+            </div>
+            <button class="btn btn-primary" id="startRecording" onclick="startRecording()">Start Recording</button>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/voice-assistant.js"></script>
+    <script>
+        let currentOutput = {};
+
+        async function generateCode() {
+            const prompt = document.getElementById('codePrompt').value;
+            if (!prompt) {
+                alert('Please enter a code description');
+                return;
+            }
+
+            const outputDiv = document.getElementById('codeOutput');
+            outputDiv.innerHTML = '<div class="spinner"></div>';
+            outputDiv.classList.add('loading');
+
+            try {
+                const response = await fetchWithAuth('/api/generate-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
+                });
+
+                const data = await response.json();
+                currentOutput.code = data.result;
+                outputDiv.classList.remove('loading');
+                outputDiv.textContent = data.result;
+                document.getElementById('downloadCodeBtn').style.display = 'inline-block';
+            } catch (error) {
+                outputDiv.classList.remove('loading');
+                outputDiv.textContent = 'Error generating code: ' + error.message;
+            }
+        }
+
+        async function generateTestCases() {
+            const code = document.getElementById('testCaseCode').value;
+            if (!code) {
+                alert('Please enter code');
+                return;
+            }
+
+            const outputDiv = document.getElementById('testCaseOutput');
+            outputDiv.innerHTML = '<div class="spinner"></div>';
+            outputDiv.classList.add('loading');
+
+            try {
+                const response = await fetchWithAuth('/api/generate-test-cases', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+
+                const data = await response.json();
+                currentOutput.testCases = data.result;
+                outputDiv.classList.remove('loading');
+                outputDiv.textContent = data.result;
+                document.getElementById('downloadTestBtn').style.display = 'inline-block';
+            } catch (error) {
+                outputDiv.classList.remove('loading');
+                outputDiv.textContent = 'Error generating test cases: ' + error.message;
+            }
+        }
+
+        async function fixBug() {
+            const code = document.getElementById('buggyCode').value;
+            const bugDescription = document.getElementById('bugDescription').value;
+            
+            if (!code || !bugDescription) {
+                alert('Please enter both code and bug description');
+                return;
+            }
+
+            const outputDiv = document.getElementById('bugFixOutput');
+            outputDiv.innerHTML = '<div class="spinner"></div>';
+            outputDiv.classList.add('loading');
+
+            try {
+                const response = await fetchWithAuth('/api/fix-bug', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code, bug_description: bugDescription })
+                });
+
+                const data = await response.json();
+                currentOutput.bugFix = data.result;
+                outputDiv.classList.remove('loading');
+                outputDiv.textContent = data.result;
+                document.getElementById('downloadBugBtn').style.display = 'inline-block';
+            } catch (error) {
+                outputDiv.classList.remove('loading');
+                outputDiv.textContent = 'Error fixing bug: ' + error.message;
+            }
+        }
+
+        async function requirementsToCode() {
+            const requirements = document.getElementById('requirements').value;
+            if (!requirements) {
+                alert('Please enter requirements');
+                return;
+            }
+
+            const docDiv = document.getElementById('docOutput');
+            const codeDiv = document.getElementById('reqCodeOutput');
+            const testDiv = document.getElementById('reqTestOutput');
+
+            docDiv.innerHTML = '<div class="spinner"></div>';
+            codeDiv.innerHTML = '<div class="spinner"></div>';
+            testDiv.innerHTML = '<div class="spinner"></div>';
+
+            try {
+                const response = await fetchWithAuth('/api/requirements-to-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ requirements })
+                });
+
+                const data = await response.json();
+                currentOutput.requirements = data;
+                
+                docDiv.textContent = data.documentation;
+                codeDiv.textContent = data.code;
+                testDiv.textContent = data.test_cases;
+                
+                document.getElementById('downloadReqBtn').style.display = 'inline-block';
+            } catch (error) {
+                docDiv.textContent = 'Error: ' + error.message;
+                codeDiv.textContent = '';
+                testDiv.textContent = '';
+            }
+        }
+
+        async function generateUML() {
+            const requirements = document.getElementById('umlRequirements').value;
+            if (!requirements) {
+                alert('Please enter requirements for UML');
+                return;
+            }
+
+            const outputDiv = document.getElementById('umlOutput');
+            const imageDiv = document.getElementById('umlImage');
+            
+            outputDiv.innerHTML = '<div class="spinner"></div>';
+            outputDiv.classList.add('loading');
+            imageDiv.innerHTML = '';
+
+            try {
+                const response = await fetchWithAuth('/api/generate-uml', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ requirements })
+                });
+
+                const data = await response.json();
+                outputDiv.classList.remove('loading');
+                outputDiv.textContent = data.uml_code;
+                
+                // Generate PlantUML image
+                const encoded = encodePlantUML(data.uml_code);
+                imageDiv.innerHTML = `<img src="http://www.plantuml.com/plantuml/png/${encoded}" alt="UML Diagram" style="max-width: 100%; border: 2px solid var(--border); border-radius: 10px; padding: 10px; background: white;">`;
+            } catch (error) {
+                outputDiv.classList.remove('loading');
+                outputDiv.textContent = 'Error generating UML: ' + error.message;
+            }
+        }
+
+        function encodePlantUML(text) {
+            // Simple base64 encoding for PlantUML
+            return btoa(unescape(encodeURIComponent(text)));
+        }
+
+        async function downloadPDF(type) {
+            let content = '';
+            let title = '';
+
+            switch(type) {
+                case 'code':
+                    content = currentOutput.code || '';
+                    title = 'Generated Code';
+                    break;
+                case 'testCases':
+                    content = currentOutput.testCases || '';
+                    title = 'Test Cases';
+                    break;
+                case 'bugFix':
+                    content = currentOutput.bugFix || '';
+                    title = 'Bug Fix';
+                    break;
+                case 'requirements':
+                    content = `DOCUMENTATION:\n\n${currentOutput.requirements.documentation}\n\n\nCODE:\n\n${currentOutput.requirements.code}\n\n\nTEST CASES:\n\n${currentOutput.requirements.test_cases}`;
+                    title = 'Requirements to Code';
+                    break;
+            }
+
+            if (!content) {
+                alert('No content to download');
+                return;
+            }
+
+            try {
+                const response = await fetchWithAuth('/api/download-pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content, title })
+                });
+
+                const data = await response.json();
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.href = 'data:application/pdf;base64,' + data.pdf_data;
+                link.download = data.filename;
+                link.click();
+            } catch (error) {
+                alert('Error downloading PDF: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

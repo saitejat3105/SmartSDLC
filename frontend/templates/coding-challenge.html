@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coding Challenge - SDLC Assistant</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1>💻 Coding Challenges</h1>
+                <p>Practice and improve your coding skills</p>
+                <a href="/dashboard" class="btn btn-secondary" style="float: right; margin-top: -50px;">← Back to Dashboard</a>
+            </div>
+
+            <div class="challenge-layout">
+                <!-- Problem List -->
+                <div class="problem-list">
+                    <h2>Problems</h2>
+                    <div id="problemsList"></div>
+                </div>
+
+                <!-- Code Editor -->
+                <div class="code-editor">
+                    <div id="problemDetail" style="display: none;">
+                        <h2 id="problemTitle"></h2>
+                        <span id="problemDifficulty" class="difficulty"></span>
+                        <p id="problemDescription" style="margin: 15px 0;"></p>
+                        
+                        <div class="form-group">
+                            <label>Language:</label>
+                            <select id="languageSelect">
+                                <option value="python">Python</option>
+                                <option value="java">Java</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Your Code:</label>
+                            <textarea id="codeEditor" placeholder="Write your code here..."></textarea>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="runCode()">Run Code</button>
+
+                        <div id="testResults" class="test-results"></div>
+                    </div>
+
+                    <div id="noProblemSelected" style="text-align: center; padding: 50px;">
+                        <h3>Select a problem to start coding</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-container">
+                <h2>Your Performance 📊</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                    <div class="chart-container">
+                        <canvas id="problemsChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="difficultyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Assistant -->
+    <div class="voice-assistant">
+        <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceAssistant()">🎤</button>
+        <div class="voice-window" id="voiceWindow">
+            <h3>Voice Assistant</h3>
+            <div class="voice-output" id="voiceOutput">
+                <p>Click the microphone and ask me anything about SDLC...</p>
+            </div>
+            <button class="btn btn-primary" id="startRecording" onclick="startRecording()">Start Recording</button>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/voice-assistant.js"></script>
+    <script src="/static/js/coding-challenge.js"></script>
+</body>
+</html>
